@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Бид уулзах уу?</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap');
+
+:root{
+  --bg-deep: #1a1530;
+  --bg-mid: #241b3f;
+  --accent-pink: #e8b4bc;
+  --accent-lilac: #c9a5d4;
+  --accent-gold: #e8c988;
+  --text-soft: #f3ecf7;
+  --text-dim: #b8a9cc;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  min-height:100vh;
+  background: radial-gradient(ellipse at top, var(--bg-mid), var(--bg-deep) 70%);
+  font-family:'Poppins', sans-serif;
+  color: var(--text-soft);
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ambient stars */
+.stars{
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+}
+.star{
+  position:absolute; width:3px; height:3px; border-radius:50%;
+  background: var(--accent-gold);
+  opacity:0.6;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle{
+  0%,100%{opacity:0.15; transform:scale(1);}
+  50%{opacity:0.8; transform:scale(1.4);}
+}
+
+.screen{
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:32px 20px;
+  text-align:center;
+}
+.screen.active{display:flex;}
+
+.eyebrow{
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--accent-gold);
+  margin-bottom:18px;
+  opacity:0.85;
+}
+
+h1{
+  font-family:'Playfair Display', serif;
+  font-weight:700;
+  font-size:clamp(28px, 6vw, 46px);
+  line-height:1.25;
+  max-width:560px;
+  margin-bottom:14px;
+}
+h1 em{
+  font-style:italic;
+  color:var(--accent-pink);
+}
+
+.sub{
+  color:var(--text-dim);
+  font-size:15px;
+  max-width:420px;
+  margin-bottom:38px;
+  line-height:1.6;
+}
+
+.choice-row{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+button{
+  font-family:'Poppins', sans-serif;
+  cursor:pointer;
+  border:none;
+  outline:none;
+}
+
+.btn-yes{
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-lilac));
+  color:#2a1a35;
+  font-weight:600;
+  font-size:17px;
+  padding:16px 46px;
+  border-radius:100px;
+  box-shadow: 0 8px 24px rgba(232,180,188,0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.btn-yes:hover{
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(232,180,188,0.4);
+}
+
+.btn-no{
+  background: transparent;
+  color: var(--text-dim);
+  font-weight:500;
+  font-size:15px;
+  padding:16px 30px;
+  border-radius:100px;
+  border: 1px solid rgba(184,169,204,0.35);
+  transition: all 0.2s ease;
+}
+.btn-no:hover{
+  border-color: var(--text-dim);
+  color: var(--text-soft);
+}
+
+.divider{
+  width:44px; height:1px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  margin: 26px 0;
+  opacity:0.5;
+}
+
+/* time grid */
+.time-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  max-width:420px;
+  width:100%;
+  margin-bottom:34px;
+}
+.time-chip{
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(232,180,188,0.25);
+  color: var(--text-soft);
+  padding:14px 8px;
+  border-radius:14px;
+  font-size:15px;
+  font-weight:500;
+  transition: all 0.2s ease;
+}
+.time-chip:hover{
+  background: rgba(232,180,188,0.12);
+  border-color: var(--accent-pink);
+}
+.time-chip.selected{
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-lilac));
+  color:#2a1a35;
+  border-color:transparent;
+  font-weight:600;
+}
+
+/* activity list */
+.activity-wrap{
+  max-width:460px;
+  width:100%;
+}
+.activity-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:22px;
+  text-align:left;
+}
+.activity-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(201,165,212,0.2);
+  padding:14px 18px;
+  border-radius:14px;
+  cursor:pointer;
+  transition: all 0.2s ease;
+}
+.activity-item:hover{
+  border-color: var(--accent-lilac);
+  background: rgba(201,165,212,0.08);
+}
+.activity-item.selected{
+  border-color: var(--accent-pink);
+  background: rgba(232,180,188,0.12);
+}
+.activity-check{
+  width:20px; height:20px;
+  border-radius:6px;
+  border:1.5px solid var(--text-dim);
+  flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px;
+  transition: all 0.2s ease;
+}
+.activity-item.selected .activity-check{
+  background: var(--accent-pink);
+  border-color: var(--accent-pink);
+  color:#2a1a35;
+}
+.activity-label{font-size:15px; font-weight:500;}
+.activity-desc{font-size:12.5px; color:var(--text-dim); margin-top:2px;}
+
+/* sub-options (genre etc.) */
+.subopts{
+  display:none;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+  padding-left:34px;
+}
+.subopts.open{display:flex;}
+.subopt-chip{
+  font-size:12.5px;
+  padding:7px 14px;
+  border-radius:100px;
+  border:1px solid rgba(232,180,188,0.3);
+  color:var(--text-dim);
+  background:transparent;
+}
+.subopt-chip.selected{
+  background: var(--accent-gold);
+  color:#2a1a35;
+  border-color:transparent;
+  font-weight:600;
+}
+
+.custom-input{
+  width:100%;
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(201,165,212,0.25);
+  color: var(--text-soft);
+  padding:14px 16px;
+  border-radius:14px;
+  font-family:'Poppins',sans-serif;
+  font-size:14px;
+  margin-top:8px;
+}
+.custom-input::placeholder{color:var(--text-dim);}
+
+.counter{
+  font-size:13px;
+  color:var(--text-dim);
+  margin-bottom:16px;
+}
+
+.hint-locked{
+  font-size:13px;
+  color:var(--accent-gold);
+  margin-bottom:14px;
+  opacity:0.9;
+}
+
+/* confirm screen */
+.paris-font{
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(38px, 8vw, 64px);
+  color: var(--accent-gold);
+  margin: 6px 0 22px 0;
+  line-height:1.3;
+  text-shadow: 0 2px 20px rgba(232,201,136,0.35);
+}
+
+.summary-card{
+  background: rgba(255,255,255,0.05);
+  border:1px solid rgba(232,180,188,0.25);
+  border-radius:20px;
+  padding:26px 28px;
+  max-width:400px;
+  width:100%;
+  margin-bottom:30px;
+  text-align:left;
+}
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  font-size:14.5px;
+}
+.summary-row:last-child{border-bottom:none;}
+.summary-row .label{color:var(--text-dim);}
+.summary-row .value{font-weight:600; text-align:right;}
+
+.back-btn{
+  background: transparent;
+  color: var(--text-dim);
+  font-size:14px;
+  padding:12px 24px;
+  border:1px solid rgba(184,169,204,0.3);
+  border-radius:100px;
+  margin-top:4px;
+}
+.back-btn:hover{color:var(--text-soft); border-color:var(--text-dim);}
+
+/* confetti */
+.confetti{
+  position:fixed;
+  width:8px; height:14px;
+  top:-20px;
+  opacity:0.9;
+  z-index:5;
+  border-radius:2px;
+}
+
+/* admin */
+.admin-trigger{
+  position:fixed;
+  bottom:10px; right:14px;
+  font-size:10px;
+  color:rgba(255,255,255,0.15);
+  z-index:10;
+  cursor:default;
+  user-select:none;
+}
+.admin-panel{
+  position:fixed;
+  inset:0;
+  background: rgba(10,8,20,0.97);
+  z-index:50;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.admin-panel.active{display:flex;}
+.admin-panel input{
+  background: rgba(255,255,255,0.06);
+  border:1px solid rgba(232,180,188,0.3);
+  color:var(--text-soft);
+  padding:12px 16px;
+  border-radius:10px;
+  font-size:15px;
+  margin-bottom:14px;
+  width:220px;
+  text-align:center;
+  letter-spacing:4px;
+}
+.admin-list{
+  max-width:480px;
+  width:100%;
+  max-height:60vh;
+  overflow-y:auto;
+  margin-top:20px;
+}
+.admin-entry{
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(201,165,212,0.2);
+  border-radius:14px;
+  padding:16px 18px;
+  margin-bottom:12px;
+  text-align:left;
+  font-size:13.5px;
+  line-height:1.7;
+}
+.admin-close{
+  position:absolute;
+  top:20px; right:24px;
+  color:var(--text-dim);
+  font-size:20px;
+  background:none;
+  border:none;
+}
+
+/* date grid */
+.date-grid{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:10px;
+  max-width:440px;
+  width:100%;
+  margin-bottom:34px;
+}
+.date-chip{
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(232,180,188,0.25);
+  color: var(--text-soft);
+  padding:12px 4px;
+  border-radius:14px;
+  font-size:13px;
+  font-weight:500;
+  transition: all 0.2s ease;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+.date-chip .wd{
+  font-size:10.5px;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.date-chip .dnum{
+  font-size:17px;
+  font-weight:600;
+}
+.date-chip:hover{
+  background: rgba(232,180,188,0.12);
+  border-color: var(--accent-pink);
+}
+.date-chip.selected{
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-lilac));
+  border-color:transparent;
+}
+.date-chip.selected .wd, .date-chip.selected .dnum{
+  color:#2a1a35;
+}
+
+@media (max-width:420px){
+  .time-grid{grid-template-columns:repeat(2,1fr);}
+  .date-grid{grid-template-columns:repeat(4,1fr);}
+}
+
+/* envelope intro */
+.envelope-wrap{
+  cursor:pointer;
+  perspective:1000px;
+}
+.envelope{
+  position:relative;
+  width:220px;
+  height:150px;
+  transition: transform 0.4s ease;
+}
+.envelope-wrap:hover .envelope{
+  transform: translateY(-4px);
+}
+.envelope-back{
+  position:absolute;
+  inset:0;
+  background: #ED9AC9;
+  border:1px solid rgba(232,180,188,0.3);
+  border-radius:10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+.envelope-letter{
+  position:absolute;
+  left:10px; right:10px;
+  top:14px;
+  height:118px;
+  background: linear-gradient(160deg, #f3ecf7, #e8d9ee);
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+  z-index:1;
+}
+.letter-text{
+  font-family:'Playfair Display', serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:15px;
+  color:#3a2b57;
+  line-height:1.5;
+  text-align:center;
+}
+.envelope-flap{
+  position:absolute;
+  top:0; left:0; right:0;
+  height:0;
+  border-left:110px solid transparent;
+  border-right:110px solid transparent;
+  border-top:78px solid #352a52;
+  border-radius:10px 10px 0 0;
+  transform-origin:top center;
+  transition: transform 0.6s ease;
+  z-index:2;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+.envelope-wrap.opened .envelope-flap{
+  transform: rotateX(180deg);
+  z-index:0;
+}
+.envelope-wrap.opened .envelope-letter{
+  transform: translateY(-72px) scale(1.04);
+}
+.fade-out{
+  animation: fadeOutUp 0.6s ease forwards;
+}
+@keyframes fadeOutUp{
+  to{ opacity:0; transform:translateY(-16px); }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- SCREEN LETTER: intro envelope -->
+<div class="screen active" id="screen-letter">
+  <div class="envelope-wrap" id="envelopeWrap" onclick="openLetter()">
+    <div class="envelope">
+      <div class="envelope-back"></div>
+      <div class="envelope-letter" id="envelopeLetter">
+        <div class="letter-text">Чамд хэлэх зүйл бий... 🤍</div>
+      </div>
+      <div class="envelope-flap" id="envelopeFlap"></div>
+    </div>
+  </div>
+  <p class="sub" style="margin-top:34px;">Дарж нээгээрэй</p>
+</div>
+
+<!-- SCREEN 0: welcome -->
+<div class="screen" id="screen-welcome">
+  <div class="eyebrow">Асуулт</div>
+  <h1>Маргааш надтай<br><em>болзоо</em> зохих уу?</h1>
+  <p class="sub">Цаг гаргаад, юу хийхийг сонгоод, бид тохирвол л уулзана.</p>
+  <div class="choice-row">
+    <button class="btn-yes" onclick="goTo('screen-date')">Тиймээ 💛</button>
+    <button class="btn-no" onclick="handleNo()">Үгүй</button>
+  </div>
+</div>
+
+<!-- SCREEN NO -->
+<div class="screen" id="screen-no">
+  <div class="eyebrow">Ойлголоо</div>
+  <h1>Маргааш завгүй байна уу?</h1>
+  <p class="sub">Асуудалгүй ✨ Өөр өдөр эсвэл өөр цагт санал болгоё.</p>
+  <div class="choice-row">
+    <button class="btn-yes" onclick="goTo('screen-date')">Өөр өдөр харах</button>
+    <button class="btn-no" onclick="goTo('screen-welcome')">Буцах</button>
+  </div>
+</div>
+
+<!-- SCREEN 1a: date calendar -->
+<div class="screen" id="screen-date">
+  <div class="eyebrow">Алхам 1 · Өдөр</div>
+  <h1>Аль өдөр тохиромжтой вэ?</h1>
+  <p class="sub">Дараагийн 10 өдрөөс сонгоорой.</p>
+  <div class="date-grid" id="dateGrid"></div>
+  <div class="choice-row">
+    <button class="btn-yes" id="dateNextBtn" style="opacity:0.4; pointer-events:none;" onclick="goTo('screen-time')">Дараах →</button>
+  </div>
+</div>
+
+<!-- SCREEN 1: time -->
+<div class="screen" id="screen-time">
+  <div class="eyebrow">Алхам 1 · Цаг</div>
+  <h1>Хэдэн цагт тохиромжтой вэ?</h1>
+  <p class="sub">Хамгийн таатай цагаа сонго.</p>
+  <div class="time-grid" id="timeGrid"></div>
+  <div class="choice-row">
+    <button class="btn-yes" id="timeNextBtn" style="opacity:0.4; pointer-events:none;" onclick="goTo('screen-activity')">Дараах →</button>
+  </div>
+</div>
+
+<!-- SCREEN 2: activities -->
+<div class="screen" id="screen-activity">
+  <div class="eyebrow">Алхам 2 · Юу хийх вэ</div>
+  <h1>Юу хийхийг хүсэж байна?</h1>
+  <p class="sub">2–3 сонголт хийж болно.</p>
+  <div class="activity-wrap">
+    <div class="activity-list" id="activityList"></div>
+    <div class="counter" id="activityCounter">0 сонгосон (2–3 сонго)</div>
+  </div>
+  <div class="choice-row">
+    <button class="btn-yes" id="activityNextBtn" style="opacity:0.4; pointer-events:none;" onclick="finish()">Дуусгах →</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: confirm -->
+<div class="screen" id="screen-confirm">
+  <div class="eyebrow">Баталгаажлаа</div>
+  <div class="paris-font">АНУ-д зориулав</div>
+  <h1 style="font-size:22px; margin-bottom:24px;">Маргааш уулзъя, хуурхнуу 🤍</h1>
+  <div class="summary-card" id="summaryCard"></div>
+  <button class="back-btn" onclick="resetAll()">Нүүр хэсэг рүү буцах</button>
+</div>
+
+<div class="admin-trigger" onclick="openAdmin()">♡</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <button class="admin-close" onclick="closeAdmin()">✕</button>
+  <div id="adminAuth">
+    <div class="eyebrow">Админ</div>
+    <h1 style="font-size:22px;">Код оруулна уу</h1>
+    <input type="password" id="adminCode" maxlength="4" placeholder="••••" inputmode="numeric" oninput="this.style.borderColor='rgba(232,180,188,0.3)'" onkeydown="if(event.key==='Enter'){checkAdmin();}">
+    <div class="choice-row"><button class="btn-yes" onclick="checkAdmin()">Нэвтрэх</button></div>
+  </div>
+  <div id="adminContent" style="display:none; width:100%; align-items:center; flex-direction:column;">
+    <div class="eyebrow">Хариултууд</div>
+    <h1 style="font-size:22px;">Ирсэн хариултууд</h1>
+    <div class="admin-list" id="adminList"></div>
+  </div>
+</div>
+
+<script>
+const TIMES = ['12:45','14:15','15:15','16:00','17:15','18:00'];
+const ACTIVITIES = [
+  {id:'walk', label:'Паркаар зэрэглэн алхах', desc:''},
+  {id:'art', label:'Уран зургийн музей үзэх', desc:''},
+  {id:'movie', label:'Кино үзэх', desc:'', sub:['Horror','Comedy','Хүүхэлдэйн кино','Уран зөгнөлт']},
+  {id:'surprise', label:'Чи өөрөө мэдвэл ямар вэ', desc:''},
+];
+
+let state = { date:null, time:null, activities:[], subChoices:{}, customText:'' };
+
+// ---- No-login response storage (jsonbin.io) ----
+// 1. Go to https://jsonbin.io and create a free account (no card needed)
+// 2. Create a new bin with content: []
+// 3. Copy your Bin ID and X-Master-Key from your account, paste them below
+const JSONBIN_ID = '6a883a9bf5f4af5e293102ea';
+const JSONBIN_KEY = '$2a$10$v3w9mPI4WzkRl9YnLVi3zeHVmBb/Lj5CGQR2JmFUJZnqkL7RaZrzy';
+const STORAGE_READY = JSONBIN_ID !== 'YOUR_BIN_ID' && JSONBIN_KEY !== 'YOUR_MASTER_KEY';
+
+async function saveResponse(entry){
+  if(!STORAGE_READY) return;
+  try{
+    const getRes = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`);
+    if(!getRes.ok){
+      console.error('GET failed', getRes.status, await getRes.text());
+      return;
+    }
+    const data = await getRes.json();
+    const list = Array.isArray(data.record?.responses) ? data.record.responses : [];
+    list.push(entry);
+    const putRes = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+      method:'PUT',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ responses: list })
+    });
+    if(!putRes.ok){
+      console.error('PUT failed', putRes.status, await putRes.text());
+    }
+  }catch(e){ console.error('save failed', e); }
+}
+
+async function fetchResponses(){
+  if(!STORAGE_READY) return [];
+  const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`);
+  if(!res.ok){
+    throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  }
+  const data = await res.json();
+  return Array.isArray(data.record?.responses) ? data.record.responses : [];
+}
+
+// date grid
+const WEEKDAYS_MN = ['Ням','Дав','Мяг','Лха','Пүр','Баа','Бям'];
+const MONTHS_MN = ['1-р сар','2-р сар','3-р сар','4-р сар','5-р сар','6-р сар','7-р сар','8-р сар','9-р сар','10-р сар','11-р сар','12-р сар'];
+const dateGrid = document.getElementById('dateGrid');
+const dateOptions = [];
+for(let i=1;i<=10;i++){
+  const d = new Date();
+  d.setDate(d.getDate()+i);
+  dateOptions.push(d);
+}
+dateOptions.forEach(d=>{
+  const chip = document.createElement('button');
+  chip.className='date-chip';
+  chip.innerHTML = `<span class="wd">${WEEKDAYS_MN[d.getDay()]}</span><span class="dnum">${d.getDate()}</span><span class="wd">${MONTHS_MN[d.getMonth()]}</span>`;
+  chip.onclick=()=>{
+    document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('selected'));
+    chip.classList.add('selected');
+    state.date = `${WEEKDAYS_MN[d.getDay()]}, ${d.getDate()} ${MONTHS_MN[d.getMonth()]}`;
+    const btn = document.getElementById('dateNextBtn');
+    btn.style.opacity=1; btn.style.pointerEvents='auto';
+  };
+  dateGrid.appendChild(chip);
+});
+
+// stars
+const starsEl = document.getElementById('stars');
+for(let i=0;i<40;i++){
+  const s = document.createElement('div');
+  s.className='star';
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*100+'%';
+  s.style.animationDelay = (Math.random()*3)+'s';
+  starsEl.appendChild(s);
+}
+
+function openLetter(){
+  const wrap = document.getElementById('envelopeWrap');
+  if(wrap.classList.contains('opened')) return;
+  wrap.classList.add('opened');
+  setTimeout(()=>{
+    const screenLetter = document.getElementById('screen-letter');
+    screenLetter.classList.add('fade-out');
+    setTimeout(()=>{
+      goTo('screen-welcome');
+    }, 550);
+  }, 900);
+}
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function handleNo(){
+  goTo('screen-no');
+}
+
+// time grid
+const timeGrid = document.getElementById('timeGrid');
+TIMES.forEach(t=>{
+  const chip = document.createElement('button');
+  chip.className='time-chip';
+  chip.textContent=t;
+  chip.onclick=()=>{
+    document.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('selected'));
+    chip.classList.add('selected');
+    state.time = t;
+    const btn = document.getElementById('timeNextBtn');
+    btn.style.opacity=1; btn.style.pointerEvents='auto';
+  };
+  timeGrid.appendChild(chip);
+});
+
+// activity list
+const activityList = document.getElementById('activityList');
+ACTIVITIES.forEach(a=>{
+  const item = document.createElement('div');
+  item.className='activity-item';
+  item.innerHTML = `
+    <div class="activity-check">✓</div>
+    <div style="flex:1;">
+      <div class="activity-label">${a.label}</div>
+      ${a.sub ? `<div class="subopts" id="sub-${a.id}">${a.sub.map(s=>`<button class="subopt-chip" data-sub="${s}">${s}</button>`).join('')}</div>`: ''}
+      ${a.id==='surprise' ? `<input class="custom-input" id="customInput" placeholder="Бичээд өгөөрэй..." style="display:none;">` : ''}
+    </div>
+  `;
+  item.onclick=(e)=>{
+    if(e.target.classList.contains('subopt-chip')) return;
+    if(e.target.id==='customInput') return;
+    toggleActivity(a.id, item);
+  };
+  activityList.appendChild(item);
+
+  if(a.sub){
+    setTimeout(()=>{
+      document.querySelectorAll(`#sub-${a.id} .subopt-chip`).forEach(chip=>{
+        chip.onclick=(e)=>{
+          e.stopPropagation();
+          chip.classList.toggle('selected');
+          const val = chip.dataset.sub;
+          if(!state.subChoices[a.id]) state.subChoices[a.id]=[];
+          if(chip.classList.contains('selected')){
+            state.subChoices[a.id].push(val);
+          } else {
+            state.subChoices[a.id] = state.subChoices[a.id].filter(v=>v!==val);
+          }
+        };
+      });
+    },0);
+  }
+});
+
+function toggleActivity(id, el){
+  const idx = state.activities.indexOf(id);
+  if(idx>-1){
+    state.activities.splice(idx,1);
+    el.classList.remove('selected');
+    const sub = el.querySelector('.subopts');
+    if(sub) sub.classList.remove('open');
+    const custom = el.querySelector('#customInput');
+    if(custom) custom.style.display='none';
+  } else {
+    if(state.activities.length>=3) return;
+    state.activities.push(id);
+    el.classList.add('selected');
+    const sub = el.querySelector('.subopts');
+    if(sub) sub.classList.add('open');
+    const custom = el.querySelector('#customInput');
+    if(custom) custom.style.display='block';
+  }
+  updateActivityCounter();
+}
+
+function updateActivityCounter(){
+  const n = state.activities.length;
+  document.getElementById('activityCounter').textContent = `${n} сонгосон (2–3 сонго)`;
+  const btn = document.getElementById('activityNextBtn');
+  if(n>=2 && n<=3){
+    btn.style.opacity=1; btn.style.pointerEvents='auto';
+  } else {
+    btn.style.opacity=0.4; btn.style.pointerEvents='none';
+  }
+}
+
+async function finish(){
+  const customInput = document.getElementById('customInput');
+  if(customInput) state.customText = customInput.value;
+
+  // build summary
+  const card = document.getElementById('summaryCard');
+  let html = state.date ? `<div class="summary-row"><span class="label">Өдөр</span><span class="value">${state.date}</span></div>` : `<div class="summary-row"><span class="label">Өдөр</span><span class="value">Маргааш</span></div>`;
+  html += `<div class="summary-row"><span class="label">Цаг</span><span class="value">${state.time}</span></div>`;
+  state.activities.forEach(id=>{
+    const a = ACTIVITIES.find(x=>x.id===id);
+    let val = a.label;
+    if(state.subChoices[id] && state.subChoices[id].length){
+      val += ` (${state.subChoices[id].join(', ')})`;
+    }
+    if(id==='surprise' && state.customText){
+      val = state.customText;
+    }
+    html += `<div class="summary-row"><span class="label">Хийх зүйл</span><span class="value">${val}</span></div>`;
+  });
+  card.innerHTML = html;
+
+  // save response
+  const entry = {
+    date: state.date || 'Маргааш',
+    time: state.time,
+    activities: state.activities.map(id=>{
+      const a = ACTIVITIES.find(x=>x.id===id);
+      let val = a.label;
+      if(state.subChoices[id] && state.subChoices[id].length) val += ` (${state.subChoices[id].join(', ')})`;
+      if(id==='surprise' && state.customText) val = state.customText;
+      return val;
+    }),
+    submittedAt: new Date().toISOString()
+  };
+  await saveResponse(entry);
+
+  goTo('screen-confirm');
+  launchConfetti();
+}
+
+function resetAll(){
+  state = { date:null, time:null, activities:[], subChoices:{}, customText:'' };
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.time-chip').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.activity-item').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('.subopts').forEach(s=>s.classList.remove('open'));
+  document.querySelectorAll('.subopt-chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('dateNextBtn').style.opacity=0.4;
+  document.getElementById('dateNextBtn').style.pointerEvents='none';
+  document.getElementById('timeNextBtn').style.opacity=0.4;
+  document.getElementById('timeNextBtn').style.pointerEvents='none';
+  updateActivityCounter();
+  goTo('screen-welcome');
+}
+
+function launchConfetti(){
+  const colors = ['#e8b4bc','#c9a5d4','#e8c988','#f3ecf7'];
+  for(let i=0;i<60;i++){
+    const c = document.createElement('div');
+    c.className='confetti';
+    c.style.left = Math.random()*100+'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animation = `fall ${2+Math.random()*2}s linear forwards`;
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 4000);
+  }
+}
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `@keyframes fall{ to{ transform: translateY(105vh) rotate(360deg); opacity:0.3; } }`;
+document.head.appendChild(styleSheet);
+
+// ADMIN
+function openAdmin(){
+  document.getElementById('adminPanel').classList.add('active');
+}
+function closeAdmin(){
+  document.getElementById('adminPanel').classList.remove('active');
+  document.getElementById('adminAuth').style.display='block';
+  document.getElementById('adminContent').style.display='none';
+  document.getElementById('adminCode').value='';
+}
+async function checkAdmin(){
+  const code = document.getElementById('adminCode').value.trim();
+  if(code !== '0114'){
+    document.getElementById('adminCode').style.borderColor = '#e88b8b';
+    document.getElementById('adminCode').style.borderWidth = '2px';
+    return;
+  }
+  document.getElementById('adminAuth').style.display='none';
+  document.getElementById('adminContent').style.display='flex';
+  await loadResponses();
+}
+async function loadResponses(){
+  const listEl = document.getElementById('adminList');
+  listEl.innerHTML = '<div style="color:var(--text-dim); font-size:13px;">Ачааллаж байна...</div>';
+  if(!STORAGE_READY){
+    listEl.innerHTML = '<div style="color:var(--text-dim); font-size:13px;">Хадгалалт тохируулаагүй байна (jsonbin.io түлхүүр оруулаагүй).</div>';
+    return;
+  }
+  try{
+    const entries = await fetchResponses();
+    if(!entries.length){
+      listEl.innerHTML = '<div style="color:var(--text-dim); font-size:13px;">Одоогоор хариулт ирээгүй байна.</div>';
+      return;
+    }
+    entries.sort((a,b)=> new Date(b.submittedAt) - new Date(a.submittedAt));
+    listEl.innerHTML = entries.map(e=>`
+      <div class="admin-entry">
+        <div><strong>Өдөр:</strong> ${e.date || '-'}</div>
+        <div><strong>Цаг:</strong> ${e.time}</div>
+        <div><strong>Хийх зүйл:</strong> ${e.activities.join(' · ')}</div>
+        <div style="color:var(--text-dim); font-size:11.5px; margin-top:4px;">${new Date(e.submittedAt).toLocaleString()}</div>
+      </div>
+    `).join('');
+  }catch(e){
+    listEl.innerHTML = `<div style="color:#e88b8b; font-size:12px; text-align:left; padding:10px;">Алдаа: ${e.message || e}</div>`;
+  }
+}
+</script>
+</body>
+</html>
