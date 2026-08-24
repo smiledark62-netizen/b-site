@@ -521,10 +521,10 @@ button{
 <!-- SCREEN 0: welcome -->
 <div class="screen" id="screen-welcome">
   <div class="eyebrow">Асуулт</div>
-  <h1>Хамтдаа нэг өдрийг хөгжилтэй өнгөрөөнгөө болзох уу?</h1>
-  <p class="sub">Цаг гаргаад, юу хийхийг сонгоод, бид тохирвол л уулзана.</p>
+  <h1>Хамтдаа нэг өдрийг хөгжилтэй өнгөрөөнгөө болзох уу? 🥰</h1>
+  <p class="sub">Цаг гаргаад, юу хийхийг сонгоод, бид тохирвол л уулзана 💫</p>
   <div class="choice-row">
-    <button class="btn-yes" onclick="goTo('screen-date')">Тиймээ 💛</button>
+    <button class="btn-yes" onclick="goTo('screen-time')">Тиймээ 💛</button>
     <button class="btn-no" onclick="handleNo()">Үгүй</button>
   </div>
 </div>
@@ -543,8 +543,8 @@ button{
 <!-- SCREEN 1a: date calendar -->
 <div class="screen" id="screen-date">
   <div class="eyebrow">Алхам 1 · Өдөр</div>
-  <h1>Аль өдөр тохиромжтой вэ?</h1>
-  <p class="sub">Дараагийн 10 өдрөөс сонгоорой.</p>
+  <h1>Аль өдөр тохиромжтой вэ? 📅</h1>
+  <p class="sub">Дараагийн 10 өдрөөс сонгоорой ✨</p>
   <div class="date-grid" id="dateGrid"></div>
   <div class="choice-row">
     <button class="btn-yes" id="dateNextBtn" style="opacity:0.4; pointer-events:none;" onclick="goTo('screen-time')">Дараах →</button>
@@ -554,8 +554,8 @@ button{
 <!-- SCREEN 1: time -->
 <div class="screen" id="screen-time">
   <div class="eyebrow">Алхам 1 · Цаг</div>
-  <h1>Хэдэн цагт тохиромжтой вэ?</h1>
-  <p class="sub">Хамгийн таатай цагаа сонго.</p>
+  <h1>Хэдэн цагт тохиромжтой вэ? ⏰</h1>
+  <p class="sub">Хамгийн таатай цагаа сонго 💛</p>
   <div class="time-grid" id="timeGrid"></div>
   <div class="choice-row">
     <button class="btn-yes" id="timeNextBtn" style="opacity:0.4; pointer-events:none;" onclick="goTo('screen-activity')">Дараах →</button>
@@ -565,8 +565,8 @@ button{
 <!-- SCREEN 2: activities -->
 <div class="screen" id="screen-activity">
   <div class="eyebrow">Алхам 2 · Юу хийх вэ</div>
-  <h1>Юу хийхийг хүсэж байна?</h1>
-  <p class="sub">2–3 сонголт хийж болно.</p>
+  <h1>Юу хийхийг хүсэж байна? 🎉</h1>
+  <p class="sub">2–3 сонголт хийж болно 🌸</p>
   <div class="activity-wrap">
     <div class="activity-list" id="activityList"></div>
     <div class="counter" id="activityCounter">0 сонгосон (2–3 сонго)</div>
@@ -604,12 +604,12 @@ button{
 </div>
 
 <script>
-const TIMES = ['12:45','14:15','15:15','16:00','17:15','18:00'];
+const TIMES = ['16:00','18:00'];
 const ACTIVITIES = [
-  {id:'walk', label:'Паркаар зэрэглэн алхах', desc:''},
-  {id:'art', label:'Уран зургийн музей үзэх', desc:''},
-  {id:'movie', label:'Кино үзэх', desc:'', sub:['Horror','Comedy','Хүүхэлдэйн кино','Уран зөгнөлт']},
-  {id:'surprise', label:'Чи өөрөө мэдвэл ямар вэ', desc:''},
+  {id:'walk', label:'🌳 Паркаар зэрэглэн алхах', desc:''},
+  {id:'art', label:'🎨 Уран зургийн музей үзэх', desc:''},
+  {id:'movie', label:'🎬 Кино үзэх', desc:'', sub:['👻 Horror','😂 Comedy','🧸 Хүүхэлдэйн кино','✨ Уран зөгнөлт']},
+  {id:'surprise', label:'💫 Урьж байгаагаараа чи мэд', desc:''},
 ];
 
 let state = { date:null, time:null, activities:[], subChoices:{}, customText:'' };
@@ -737,7 +737,7 @@ ACTIVITIES.forEach(a=>{
     <div style="flex:1;">
       <div class="activity-label">${a.label}</div>
       ${a.sub ? `<div class="subopts" id="sub-${a.id}">${a.sub.map(s=>`<button class="subopt-chip" data-sub="${s}">${s}</button>`).join('')}</div>`: ''}
-      ${a.id==='surprise' ? `<input class="custom-input" id="customInput" placeholder="Бичээд өгөөрэй..." style="display:none;">` : ''}
+      ${a.id==='surprise' ? `` : ''}
     </div>
   `;
   item.onclick=(e)=>{
