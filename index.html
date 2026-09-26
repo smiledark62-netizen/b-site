@@ -268,6 +268,7 @@ input[type=date]{padding:12px 14px;border-radius:14px;border:2px solid var(--acc
 
 <script>
 const ADMIN_CODE = "1224"; // <-- энэ кодыг өөрчлөхийг хүсвэл энд солино уу
+const FORMSPREE_URL = "https://formspree.io/f/mqpaygzr";
 
 const answers = {snack:'',color:'',season:'',pet:'',flavor:'',decision:'',time:'',date:''};
 
@@ -340,11 +341,19 @@ function resetAll(){
   go('s-intro');
 }
 function saveSubmission(){
+  const record = {...answers, ts: new Date().toLocaleString('mn-MN')};
   try{
     const list = JSON.parse(localStorage.getItem('bolzoo_submissions')||'[]');
-    list.push({...answers, ts: new Date().toLocaleString('mn-MN')});
+    list.push(record);
     localStorage.setItem('bolzoo_submissions', JSON.stringify(list));
   }catch(e){}
+  if(FORMSPREE_URL.indexOf('YOUR_FORM_ID') === -1){
+    fetch(FORMSPREE_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify(record)
+    }).catch(()=>{});
+  }
 }
 function openAdmin(){ document.getElementById('admin-modal').classList.add('active'); }
 function closeAdmin(){ document.getElementById('admin-modal').classList.remove('active'); }
